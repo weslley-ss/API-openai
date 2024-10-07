@@ -30,14 +30,32 @@ def plot_hora(time):
 
 
 # ----------------------------------------------------------------
-st.title(":orange[Meu Assistente Pessoal:]")
+st.title("Meu Assistente Pessoal: :computer:")
 
+
+# Inicializar a sessão
+if 'messages' not in st.session_state:
+    st.session_state['messages'] = []
+
+# Input em formato de chat
 prompt = st.chat_input("Say something", )
+
+# Evento: Envio do prompt
 if prompt:
-    with st.chat_message("user"):
-        st.markdown(prompt)
-        plot_hora(datetime.now())
-    with st.chat_message("assistant"):
-        resposta, uso = usa_gpt(prompt)
-        st.markdown(resposta.content)
-        plot_hora(datetime.now())
+    # Adicionar mensagem do usuário ao histórico
+    st.session_state['messages'].append({"role": "user", "content": prompt, "hora":datetime.now()})
+    
+    # Gerar uma resposta com a API
+    resposta, uso = usa_gpt(prompt)
+    st.session_state['messages'].append({"role": "assistant", "content": resposta, "hora":datetime.now()})
+
+# Exibir a conversa
+for message in st.session_state['messages']:
+    if message["role"] == "user":
+        with st.chat_message("user"):
+            st.markdown(message["content"])
+            plot_hora(message["hora"])
+    else:
+        with st.chat_message("assistant"):
+            st.markdown(message["content"].content) # objeto OPENAI 
+            plot_hora(message["hora"])
