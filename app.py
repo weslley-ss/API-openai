@@ -1,31 +1,43 @@
-import os
-import json
-from openai import OpenAI
+import streamlit as st
 from datetime import datetime
+import openai
+from key import OPENAI_API_KEY #Arquivo .py contendo apenas a minha chave de acesso pessoal
 
-client = OpenAI() #Variável recebida automaticamente
+client = openai
+openai.api_key = OPENAI_API_KEY
 
-response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "system", "content": "Você é um instrutor para um iniciante em computação e no uso de aplicações comuns ao ramo de programação"},
-        {"role": "user", "content": "Me dê um road-map para eu começar construir aplicações LLM a partir da API da openai?"}
-    ]
-)
+# FUNÇÕES
+def usa_gpt(prompt:str):
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Você é um instrutor para um iniciante em computação e no uso de aplicações comuns ao ramo de programação. Responda de forma sequencial, quando ouvir passo-a-passo e tente não usar um número muito grande tokens para responder."},
+            {"role": "user", "content": prompt}]
+            #,max_token=100
+    )
+    return response.choices[0].message, response.usage
 
-try:
-    response_json = json.dumps(response)
-except:
-    response_json = str(response)
+def plot_hora(time):
+     # Exibir a hora alinhada à direita
+    st.markdown(
+        f"""
+        <div style='text-align: right; font-size: 0.8em; color: gray;'>
+            {time.strftime('%H:%M')}
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
-# Exibir a resposta formatada como JSON
-print(response_json)
 
-# Salvar a resposta completa em um arquivo JSON com data e hora
-now = datetime.now()
-file_name = f"resposta_{now.strftime('%Y-%m-%d_%H-%M')}.json"
+# ----------------------------------------------------------------
+st.title(":orange[Meu Assistente Pessoal:]")
 
-with open(file_name, 'w') as json_file:
-    json_file.write(response_json)
-
-print(f"A resposta foi salva em {file_name}")
+prompt = st.chat_input("Say something", )
+if prompt:
+    with st.chat_message("user"):
+        st.markdown(prompt)
+        plot_hora(datetime.now())
+    with st.chat_message("assistant"):
+        resposta, uso = usa_gpt(prompt)
+        st.markdown(resposta.content)
+        plot_hora(datetime.now())
