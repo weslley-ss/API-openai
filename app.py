@@ -21,12 +21,14 @@ def plot_hora(time):
      # Exibir a hora alinhada à direita
     st.markdown(
         f"""
-        <div style='text-align: right; font-size: 0.8em; color: gray;'>
-            {time.strftime('%H:%M')}
+        <div class = 'hora'> {time.strftime('%H:%M')}
         </div>
         """, 
         unsafe_allow_html=True
     )
+
+with open("style.css") as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------------
