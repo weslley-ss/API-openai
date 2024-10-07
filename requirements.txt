@@ -10,7 +10,6 @@ frozendict==2.4.2
 idna==3.7
 jsonpatch==1.33
 jsonpointer==2.1
-libmambapy==1.5.8
 menuinst==2.1.2
 platformdirs==3.10.0
 pluggy==1.0.0
